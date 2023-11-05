@@ -1,4 +1,5 @@
 export default {
+    urlResolverTimeout: parseInt(process.env.URL_RESOLVER_TIMEOUT_SECONDS || '60'),
     googleDriveJwtKey: process.env.GOOGLE_DRIVE_JWT_KEY?.replace(/\\n/g, '\n') || '',
     googleDriveServiceAccountEmail: process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_EMAIL || '',
     pusherChannelName: process.env.PUSHER_CHANNEL_NAME || 'media-catalog-netlify',
