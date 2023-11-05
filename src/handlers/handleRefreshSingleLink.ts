@@ -41,6 +41,7 @@ export const handleNewMediaSourceAttached = async (message: { imdbId: string, we
                         size: parseInt(iterator.size || '0'),
                         title: iterator.title
                     })
+                    successCount++;
                 } catch (error) {
                     log.error(`error occurred while adding the link for imdbId: ${message.imdbId}. JSON: ${JSON.stringify(iterator, null, 4)}`);
                 }
