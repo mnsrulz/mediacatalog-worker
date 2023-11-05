@@ -16,7 +16,7 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "google-auth-library": "^9.2.0",
-    "nurlresolver": "^3.10.0",
+    "nurlresolver": "^3.10.2",
     "p-queue": "^7.4.1",
     "pino": "^8.16.1",
     "pusher-js": "^8.3.0"
