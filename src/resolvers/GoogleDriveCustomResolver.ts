@@ -2,6 +2,7 @@ import { BaseUrlResolver, ResolvedMediaItem, utils } from 'nurlresolver';
 import { JWT } from 'google-auth-library';
 import got from 'got';
 import config from '../config.js';
+import { log } from '../logger.js';
 const parseFileId = (_urlToResolve: string) => {
     if (_urlToResolve.indexOf('authenticatedgoogleclient') > 0) {
         return _urlToResolve.split('/').pop();
@@ -28,7 +29,9 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
         const links = [];
         const googleDriveId = parseFileId(_urlToResolve);
         if (googleDriveId) {
+            log.info(`trying to get google access token!`);
             const accessToken = await client.getAccessToken();
+            log.info(`google custom resolver token call succeded!`);
             const headers = {
                 Authorization: `Bearer ${accessToken.token}`
             }
@@ -56,39 +59,3 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
         //do nothing...
     }
 }
-
-// export const getYoutubePlaylistItems = async (playlistId: string, pageToken: string) => {
-
-//     const accessToken = await youtubeClient.getAccessToken();
-//     const headers = {
-//         Authorization: `Bearer ${accessToken.token}`
-//     }
-//     let u = `https://www.googleapis.com/youtube/v3/playlistItems?part=status&part=snippet%2CcontentDetails&maxResults=50&playlistId=${playlistId}`;
-//     if (pageToken) u = `${u}&pageToken=${pageToken}`
-//     const response = await got(u, {
-//         headers
-//     }).json<{
-//         nextPageToken: string,
-//         items: {
-//             snippet: {
-//                 title: string
-//             },
-//             contentDetails: {
-//                 videoId: string
-//             },
-//             status: {
-//                 privacyStatus: string
-//             }
-//         }[]
-//     }>();
-
-//     return {
-//         nextPageToken: response.nextPageToken,
-//         items: response.items
-//             .filter(x => x.status.privacyStatus == 'public')    //to overcome deleted videos
-//             .map(x => {
-//                 return { videoId: x.contentDetails.videoId, title: x.snippet.title }
-//             })
-//     };
-//     //Logger.log('got successfull response for file info endpoint...');
-// }
