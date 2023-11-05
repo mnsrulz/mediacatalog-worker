@@ -34,12 +34,9 @@ export const refreshLink = async (linkId: string, playableLink:string, headers: 
     });
 }
 
-// export const requestRefresh = async (docId: string) => {
-//     const urlPath = `api/links/${docId}/refresh`;
-//     try {
-//         log.info(`requesting refresh for docId: ${docId}`);
-//         await instance.post(urlPath);
-//     } catch (error) {
-//         log.error(`Error occurred while calling the refresh api ${urlPath}. Possibly the api is down.`);
-//     }
-// }
+interface AddLinkPayload {parentLink:string, playableLink:string, headers: Record<string,string>, imdbId: string, title:string, contentType?:string, size:number}
+export const addLink = async (payload: AddLinkPayload)=>{
+    const response = await instance.post(`api/links`, {
+        json: payload
+    });
+}
