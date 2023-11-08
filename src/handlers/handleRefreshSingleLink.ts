@@ -2,6 +2,9 @@ import PQueue from "p-queue";
 import { addLink, expireLink, getLinkInfo, refreshLink } from "../apiClient.js";
 import { log } from "../logger.js";
 import { resolve } from "../resolvers/instance.js";
+import PlexAPI from 'plex-api';
+import { join } from 'node:path';
+import config from "../config.js";
 
 export const handleRefreshSingleLink = async (message: { id: string }) => {
     log.info(`message received with content: ${JSON.stringify(message)}`);
@@ -28,7 +31,7 @@ export const handleNewMediaSourceAttached = async (message: { imdbId: string, we
         if (message.imdbId && message.webViewLink) {
             const result = await resolve(message.webViewLink);
             log.info(`resolved ${result.length} items for given imdbId: ${message.imdbId}`);
-            if(result.length === 0) return;
+            if (result.length === 0) return;
             let successCount = 0;
             for (const iterator of result) {
                 try {
@@ -51,4 +54,27 @@ export const handleNewMediaSourceAttached = async (message: { imdbId: string, we
             log.warn(`either the imdbId or the webview link is null for this message so we cannot handle it!`);
         }
     })
+}
+
+export const handlePlexItemAdded = async (message: {
+    imdbId: string,
+    mediaTitle: string,
+    year: string,
+    mediaType: 'movie' | 'tv',
+    mediaTitleSafe: string
+}) => {
+    eventHandlerQueue.add(async () => {
+        log.info(`message received with content: '${JSON.stringify(message)}' of type plex media item added`);
+        const client = new PlexAPI({ hostname: config.plexHostIp, token: config.plexApiToken, port: config.plexPort });
+
+        const r = await client.query("/library/sections");
+        const sectionName = message.mediaType == 'movie' ? config.plexMovieSectionName : config.plexTvSectionName;
+        const { key, Location } = r.MediaContainer.Directory.find((x: { title: string; }) => { return x.title == sectionName; });
+        if (!Location) log.error(`No plex location found for type ${message.mediaType}`);
+
+        const directory = `${message.mediaTitleSafe}-${message.year}-${message.imdbId}`
+        const path = join(Location[0].path, directory);
+        log.info(`Going to queue plex scan for key:"${JSON.stringify(key)}" and path "${join(Location[0].path, directory)}"`)
+        await client.query(`/library/sections/${key}/refresh?path=${encodeURIComponent(path)}`);
+    });
 }
