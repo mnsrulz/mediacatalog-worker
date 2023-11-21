@@ -42,7 +42,8 @@ export const handleNewMediaSourceAttached = async (message: { imdbId: string, we
                         parentLink: iterator.parent,
                         playableLink: iterator.link,
                         size: parseInt(iterator.size || '0'),
-                        title: iterator.title
+                        title: iterator.title,
+                        speedRank: iterator.speedRank
                     })
                     successCount++;
                 } catch (error) {
