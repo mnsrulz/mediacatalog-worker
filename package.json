@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.1",
     "google-auth-library": "^9.4.2",
     "nurlresolver": "^3.14.0",
     "p-queue": "^7.4.1",
