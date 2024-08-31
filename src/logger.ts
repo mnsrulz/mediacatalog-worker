@@ -1,14 +1,24 @@
 import * as Pino from 'pino';
 import 'pino-pretty'
-const logger = Pino.pino({
+import '@logtail/pino'
+
+const { pino } = Pino;
+const token = process.env.LOGTAIL_TOKEN;
+const ts = [{
+    target: 'pino-pretty',
+    options: {}
+}];
+if(token) {
+    ts.push({
+        target: "@logtail/pino",
+        options: { sourceToken: token }
+    })
+}
+
+const logger = pino({
     transport: {
-        target: 'pino-pretty'
+        targets: ts
     }
-})
+});
 
 export const log = logger;
-//const logger = require('pino')()
-// const lg = logger({
-
-// })
-// export default logger.default;
