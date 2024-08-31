@@ -5,7 +5,8 @@ export const resolve = async (u: string) => {
     const result = await nurlresolver.resolveRecursive(u,{
         extractMetaInformation: true,
         timeout: config.urlResolverTimeout,
-        customResolvers: [GoogleDriveCustomResolver]
+        customResolvers: [GoogleDriveCustomResolver],
+        ignoreResolvers: [/gDriveV2Resolver/, /GDriveResolver/]
     });
     return result;
 }
