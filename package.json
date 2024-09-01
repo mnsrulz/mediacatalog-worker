@@ -17,7 +17,7 @@
     "@logtail/pino": "^0.5.0",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.14.0",
-    "nurlresolver": "^3.16.1",
+    "nurlresolver": "^3.16.2",
     "p-queue": "^8.0.1",
     "plex-api": "^5.3.2",
     "pusher-js": "^8.3.0"
