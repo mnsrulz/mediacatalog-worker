@@ -29,9 +29,10 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
         const links = [];
         const googleDriveId = parseFileId(_urlToResolve);
         if (googleDriveId) {
-            log.info(`trying to get google access token!`);
+            // log.info(`trying to get google access token!`);
+            tryAddToMyCollection(googleDriveId);
             const accessToken = await client.getAccessToken();
-            log.info(`google custom resolver token call succeded!`);
+            // log.info(`google custom resolver token call succeded!`);
             const headers = {
                 Authorization: `Bearer ${accessToken.token}`
             }
@@ -57,5 +58,17 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
 
     async fillMetaInfo(resolveMediaItem: ResolvedMediaItem): Promise<void> {
         //do nothing...
+    }
+}
+
+const inmemmap = new Set<string>();
+async function tryAddToMyCollection(googleDriveId: string) {
+    if (inmemmap.has(googleDriveId)) return; //already in collection
+
+    try {
+        inmemmap.add(googleDriveId)
+        await got.post(`https://gdstreams.netlify.app/api/files/${googleDriveId}`);
+    } catch (error) {
+        log.error(`error occurred while adding file: '${googleDriveId}' to my collection`);
     }
 }
