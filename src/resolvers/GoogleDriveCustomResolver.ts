@@ -19,7 +19,7 @@ const client = new JWT({
 export class GoogleDriveCustomResolver extends BaseUrlResolver {
     constructor() {
         super({
-            domains: [/https?:\/\/authenticatedgoogleclient|((drive|docs)\.google)\.com/],
+            domains: [/https?:\/\/((drive|docs)\.google)\.com/],
             speedRank: 100
         });
     }
@@ -30,7 +30,7 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
         const googleDriveId = parseFileId(_urlToResolve);
         if (googleDriveId) {
             // log.info(`trying to get google access token!`);
-            tryAddToMyCollection(googleDriveId);
+            await tryAddToMyCollection(googleDriveId);
             const accessToken = await client.getAccessToken();
             // log.info(`google custom resolver token call succeded!`);
             const headers = {
@@ -42,7 +42,7 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
             }).json<{ name: string, size: string, modifiedTime: Date, mimeType: string }>();
             //Logger.log('got successfull response for file info endpoint...');
             const result = {
-                link: `https://www.googleapis.com/drive/v3/files/${googleDriveId}?alt=media`,
+                link: `https://gdstreams.netlify.app/api/files/${googleDriveId}/streams`,
                 isPlayable: true,
                 parent: `http://authenticatedgoogleclient.com/${googleDriveId}`,
                 title: response.name,
@@ -51,6 +51,38 @@ export class GoogleDriveCustomResolver extends BaseUrlResolver {
                 contentType: response.mimeType
             } as ResolvedMediaItem;
             result.headers = headers;
+            links.push(result);            
+        }
+        return links;
+    }
+
+    async fillMetaInfo(resolveMediaItem: ResolvedMediaItem): Promise<void> {
+        //do nothing...
+    }
+}
+
+export class GdStreamsCustomResolver extends BaseUrlResolver {
+    constructor() {
+        super({
+            domains: [/http:\/\/authenticatedgoogleclient/],
+            speedRank: 100
+        });
+    }
+    async resolveInner(_urlToResolve: string): Promise<ResolvedMediaItem | ResolvedMediaItem[]> {
+        const googleDriveId = new URL(_urlToResolve).pathname.split('/').pop();
+        const links = [];
+        if (googleDriveId) {
+            const { fileSize, title, mimeType } = await this.gotInstance(`https://gdstreams.netlify.app/api/files/${googleDriveId}`).json<{ title: string, fileSize: number, mimeType: string }>();
+            await this.gotInstance.head(`https://gdstreams.netlify.app/api/files/${googleDriveId}/streams`);
+            const result = {
+                link: `https://gdstreams.netlify.app/api/files/${googleDriveId}/streams`,
+                isPlayable: true,
+                parent: _urlToResolve,
+                title: title,
+                size: `${fileSize}`,
+                lastModified: undefined,
+                contentType: mimeType
+            } as ResolvedMediaItem;            
             links.push(result);
         }
         return links;
