@@ -1,5 +1,7 @@
 import * as esbuild from 'esbuild'
-import esbuildPluginPino from 'esbuild-plugin-pino';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const esbuildPluginPino = require('esbuild-plugin-pino');
 
 await esbuild.build({
   entryPoints: ['src/server.ts'],
@@ -10,4 +12,4 @@ await esbuild.build({
   platform: 'node',
   plugins: [esbuildPluginPino({ transports: ['pino-pretty', '@logtail/pino'] })],
   banner: { js: 'import { createRequire } from "module";const require = createRequire(import.meta.url);' }
-})
+});
