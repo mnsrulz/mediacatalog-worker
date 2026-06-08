@@ -20,7 +20,7 @@
     "nurlresolver": "^4.2.1",
     "p-queue": "^8.1.0",
     "plex-api": "^5.3.2",
-    "pusher-js": "^8.5.0"
+    "pusher-js": "^8.4.0"
   },
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
