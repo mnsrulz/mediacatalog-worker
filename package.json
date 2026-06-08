@@ -23,7 +23,7 @@
     "pusher-js": "^8.4.0"
   },
   "devDependencies": {
-    "@ava/typescript": "^6.0.0",
+    "@ava/typescript": "^7.0.0",
     "ava": "^6.4.1",
     "esbuild": "^0.25",
     "esbuild-plugin-pino": "^2.3.3",
