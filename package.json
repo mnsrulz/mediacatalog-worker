@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^6.0.0",
-    "ava": "^6.4.1",
+    "ava": "^8.0.1",
     "esbuild": "^0.25",
     "esbuild-plugin-pino": "^2.3.3",
     "pino": "^9.14.0",
