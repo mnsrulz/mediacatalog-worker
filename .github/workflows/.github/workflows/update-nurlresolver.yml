@@ -1,0 +1,58 @@
+name: Update nurlresolver Package
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-nurlresolver:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Update nurlresolver to latest
+        run: npm install nurlresolver@latest
+
+      - name: Check if package.json was modified
+        id: check_changes
+        run: |
+          if git diff --quiet package.json package-lock.json; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure Git
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore: update nurlresolver to latest version"
+
+      - name: Push changes to main
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git push origin main
