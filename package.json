@@ -15,10 +15,12 @@
   "license": "ISC",
   "dependencies": {
     "@logtail/pino": "^0.5.8",
+    "@zip.js/zip.js": "^2.24.0",
     "dotenv": "^17.4.2",
     "google-auth-library": "^10.7.0",
     "nurlresolver": "^4.2.5",
     "p-queue": "^8.1.0",
+    "pathe": "^2.0.3",
     "plex-api": "^5.3.2",
     "pusher-js": "^8.4.0"
   },

@@ -42,7 +42,7 @@ export const addLink = async (payload: AddLinkPayload) => {
 }
 
 interface AddZipEntriesPayload {
-    imdbId: string, size: string, entries: {
+    imdbId: string, size: number, entries: {
         name: string, start: number, end: number, compressedSize: number, method: number, crc?: number, uncompressedSize: number
     }[]
 }

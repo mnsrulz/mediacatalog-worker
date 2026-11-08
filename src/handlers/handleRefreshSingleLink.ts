@@ -5,7 +5,7 @@ import { resolve } from "../resolvers/instance.js";
 import PlexAPI from 'plex-api';
 import { join } from 'node:path';
 import config from "../config.js";
-import { fetchZipEntries } from "../zipService.js";
+import { fetchZipEntries, fetchZipEntriesFromStreamer } from "../zipService.js";
 
 export const handleRefreshSingleLink = async (message: { id: string }) => {
     log.info(`message received with content: ${JSON.stringify(message)}`);
@@ -52,28 +52,17 @@ export const handleNewMediaSourceAttached = async (message: { imdbId: string, we
                 }
             }
 
-            const zipEntries = await fetchZipEntries(result.filter(k=> k.title.endsWith('.zip')));
-
-            for (const [zipSize, entries] of zipEntries.entries()) {
+            const uniqueSizes = [...new Set(result.filter(k => k.title.endsWith('.zip')).map(k => Number(k.size)).filter(k => k > 0))];
+            for (const size of uniqueSizes) {
                 try {
-                    // Do something with each zip entry
-                    const zipEntryData = entries.map(k => ({
-                        name: k.fileName,
-                        compressedSize: k.compressedSize,
-                        uncompressedSize: k.uncompressedSize,
-                        method: k.compressionMethod,
-                        start: k.contentOffset,
-                        end: k.contentOffset + k.compressedSize - 1,
-                        crc: 0      //not getting from upstream
-                    }));
-    
+                    const entries = await fetchZipEntriesFromStreamer(message.imdbId, size);
                     await addZipEntries({
                         imdbId: message.imdbId,
-                        size: zipSize,
-                        entries: zipEntryData
+                        size,
+                        entries
                     });
                 } catch (error) {
-                    log.error(error);
+                    log.error(error, `Error while processing zip entries`);
                 }
             }
 
