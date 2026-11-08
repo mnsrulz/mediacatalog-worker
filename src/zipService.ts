@@ -2,6 +2,8 @@ import got from 'got';
 import config from './config.js';
 import { ResolvedMediaItem } from 'nurlresolver';
 import { log } from './logger.js';
+
+log.info(`Initializing zip service with URL: ${config.zipServiceUrl}`);
 const instance = got.extend({ prefixUrl: config.zipServiceUrl });
 
 export const fetchZipEntries = async (result: ResolvedMediaItem[]) => {
@@ -37,7 +39,7 @@ async function tryFetchEntries(items: ResolvedMediaItem[]) {
             const entries = await instance.get('files', { searchParams }).json<ZipEntry[]>();
             return entries;
         } catch (error) {
-            log.info(`Error occurred while fetching entries for item: ${JSON.stringify(v, null, 4)}`);
+            log.error(error, `Error occurred while fetching entries for item: ${JSON.stringify(v, null, 4)}`);
         }
     }
 }
