@@ -33,8 +33,10 @@ async function tryFetchEntries(items: ResolvedMediaItem[]) {
     for (const v of items) {
         try {
             const searchParams = new URLSearchParams({ u: v.link });
-            for (const [name, headerValue] of Object.entries(v.headers)) {
-                searchParams.append('h', `${name}: ${headerValue}`);
+            if (v.headers) {
+                for (const [name, headerValue] of Object.entries(v.headers)) {
+                    searchParams.append('h', `${name}:${headerValue}`);
+                }
             }
             const entries = await instance.get('files', { searchParams }).json<ZipEntry[]>();
             return entries;
