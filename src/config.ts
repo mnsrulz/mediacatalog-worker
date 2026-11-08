@@ -6,6 +6,7 @@ export default {
     pusherAppKey: process.env.PUSHER_APP_KEY || '',
     pusherAppCluster: process.env.PUSHER_APP_CLUSTER || 'us2',
     linksApiUrl: process.env.LINKS_API_URL || 'http://admin:admin@localhost:8000',
+    zipServiceUrl: process.env.ZIP_API_URL || 'http://localhost:8700',
     plexHostIp: process.env.PLEX_HOST_IP || '127.0.0.1',
     plexPort: process.env.PLEX_HOST_PORT || 32400,
     plexApiToken: process.env.PLEX_API_TOKEN || '',

@@ -1,10 +1,11 @@
 import PQueue from "p-queue";
-import { addLink, expireLink, getLinkInfo, refreshLink } from "../apiClient.js";
+import { addLink, addZipEntries, expireLink, getLinkInfo, refreshLink } from "../apiClient.js";
 import { log } from "../logger.js";
 import { resolve } from "../resolvers/instance.js";
 import PlexAPI from 'plex-api';
 import { join } from 'node:path';
 import config from "../config.js";
+import { fetchZipEntries } from "../zipService.js";
 
 export const handleRefreshSingleLink = async (message: { id: string }) => {
     log.info(`message received with content: ${JSON.stringify(message)}`);
@@ -50,6 +51,32 @@ export const handleNewMediaSourceAttached = async (message: { imdbId: string, we
                     log.error(`error occurred while adding the link for imdbId: ${message.imdbId}. JSON: ${JSON.stringify(iterator, null, 4)}`);
                 }
             }
+
+            const zipEntries = await fetchZipEntries(result.filter(k=> k.title.endsWith('.zip')));
+
+            for (const [zipSize, entries] of zipEntries.entries()) {
+                try {
+                    // Do something with each zip entry
+                    const zipEntryData = entries.map(k => ({
+                        name: k.fileName,
+                        compressedSize: k.compressedSize,
+                        uncompressedSize: k.uncompressedSize,
+                        method: k.compressionMethod,
+                        start: k.contentOffset,
+                        end: k.contentOffset + k.compressedSize - 1,
+                        crc: 0      //not getting from upstream
+                    }));
+    
+                    await addZipEntries({
+                        imdbId: message.imdbId,
+                        size: zipSize,
+                        entries: zipEntryData
+                    });
+                } catch (error) {
+                    log.error(error);
+                }
+            }
+
             log.info(`added ${successCount}/${result.length} items for given imdbId: ${message.imdbId}`);
         } else {
             log.warn(`either the imdbId or the webview link is null for this message so we cannot handle it!`);

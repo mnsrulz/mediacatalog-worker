@@ -40,3 +40,14 @@ export const addLink = async (payload: AddLinkPayload) => {
         json: payload
     });
 }
+
+interface AddZipEntriesPayload {
+    imdbId: string, size: string, entries: {
+        name: string, start: number, end: number, compressedSize: number, method: number, crc?: number, uncompressedSize: number
+    }[]
+}
+export const addZipEntries = async (payload: AddZipEntriesPayload) => {
+    await instance.post(`api/entries`, {
+        json: payload
+    });
+}
