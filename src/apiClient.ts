@@ -47,7 +47,7 @@ interface AddZipEntriesPayload {
     }[]
 }
 export const addZipEntries = async (payload: AddZipEntriesPayload) => {
-    await instance.post(`api/entries`, {
+    await instance.post(`api/links/entries`, {
         json: payload
     });
 }
